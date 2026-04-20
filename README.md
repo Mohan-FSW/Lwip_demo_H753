@@ -1,4 +1,4 @@
-# STM32H753 Ethernet Demo with lwIP
+# STM32H753 Ethernet Demo with lwIP with out FREERTOS
 
 A bare-metal Ethernet demo for the NUCLEO-H753ZI development board using the lwIP 2.1.2 TCP/IP stack. No RTOS involved — the network stack runs in a simple polling loop. The board responds to ping and can be extended for UDP/TCP applications.
 
