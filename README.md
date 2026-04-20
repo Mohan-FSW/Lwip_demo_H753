@@ -111,29 +111,38 @@ You should see replies with sub-millisecond latency on a direct connection. If p
 
 ---
 
-## Project Layout
+## Project Structure
 
+```text
 Lwip_demo_H753/
 ├── Core/
-│ ├── Inc/
-│ │ ├── main.h
-│ │ └── stm32h7xx_hal_conf.h
-│ └── Src/
-│ ├── main.c entry point, MPU, clocks, main loop
-│ ├── stm32h7xx_hal_msp.c peripheral MSP callbacks
-│ └── stm32h7xx_it.c interrupt handlers (ETH, TIM6)
+│   ├── Inc/
+│   │   ├── main.h
+│   │   └── stm32h7xx_hal_conf.h
+│   └── Src/
+│       ├── main.c                  # Entry point, MPU, clocks, main loop
+│       ├── stm32h7xx_hal_msp.c    # Peripheral MSP callbacks
+│       └── stm32h7xx_it.c         # Interrupt handlers (ETH, TIM6)
+│
 ├── LWIP/
-│ ├── App/
-│ │ └── lwip.c network interface init, IP config, process loop
-│ └── Target/
-│ ├── ethernetif.c HAL to lwIP glue, PHY management, DMA callbacks
-│ └── lwipopts.h lwIP compile-time options
+│   ├── App/
+│   │   └── lwip.c                 # Network interface init, IP config, process loop
+│   └── Target/
+│       ├── ethernetif.c           # HAL to lwIP glue, PHY management, DMA callbacks
+│       └── lwipopts.h             # lwIP compile-time options
+│
 ├── Drivers/
-│ ├── STM32H7xx_HAL_Driver/ ST HAL (unmodified)
-│ └── BSP/Components/lan8742/ LAN8742A PHY driver
-├── Middlewares/Third_Party/LwIP/ lwIP 2.1.2 (unmodified)
-├── STM32H753ZITX_FLASH.ld linker script
-└── Lwip_demo_H753.ioc CubeMX project file
+│   ├── STM32H7xx_HAL_Driver/      # ST HAL (unmodified)
+│   └── BSP/
+│       └── Components/
+│           └── lan8742/           # LAN8742A PHY driver
+│
+├── Middlewares/
+│   └── Third_Party/
+│       └── LwIP/                  # lwIP 2.1.2 (unmodified)
+│
+├── STM32H753ZITX_FLASH.ld         # Linker script
+└── Lwip_demo_H753.ioc            # STM32CubeMX project file
 
 
 ---
