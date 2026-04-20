@@ -89,6 +89,15 @@ typedef struct
 
 /* Memory Pool Declaration */
 #define ETH_RX_BUFFER_CNT             10U
+
+/* Forward-declare with the linker section attribute BEFORE LWIP_MEMPOOL_DECLARE
+ * so GCC definitely places the definition in .Rx_PoolSection (non-cacheable
+ * RAM_D2, MPU Region 2 at 0x30040200). Declaring after the definition is
+ * unreliable across GCC versions. */
+#if defined ( __GNUC__ )
+extern u8_t memp_memory_RX_POOL_base[] __attribute__((section(".Rx_PoolSection"), aligned(32)));
+#endif
+
 LWIP_MEMPOOL_DECLARE(RX_POOL, ETH_RX_BUFFER_CNT, sizeof(RxBuff_t), "Zero-copy RX PBUF pool");
 
 /* Variable Definitions */
@@ -119,8 +128,7 @@ extern u8_t memp_memory_RX_POOL_base[];
 #elif defined ( __CC_ARM ) /* MDK ARM Compiler */
 __attribute__((section(".Rx_PoolSection"))) extern u8_t memp_memory_RX_POOL_base[];
 
-#elif defined ( __GNUC__ ) /* GNU */
-__attribute__((section(".Rx_PoolSection"))) extern u8_t memp_memory_RX_POOL_base[];
+/* GNU: section attribute already applied via forward declaration above the pool definition */
 #endif
 
 /* USER CODE BEGIN 2 */
@@ -305,7 +313,19 @@ static err_t low_level_output(struct netif *netif, struct pbuf *p)
   TxConfig.TxBuffer = Txbuffer;
   TxConfig.pData = p;
 
-  HAL_ETH_Transmit(&heth, &TxConfig, ETH_DMA_TRANSMIT_TIMEOUT);
+  /* TX buffers live in the cacheable lwIP heap (0x30020000, MPU Region 1).
+   * The ETH DMA reads directly from physical RAM, bypassing D-cache.
+   * Clean each buffer's cache lines to RAM before triggering DMA. */
+  for (uint32_t j = 0U; j < i; j++)
+  {
+    SCB_CleanDCache_by_Addr((uint32_t *)((uint32_t)Txbuffer[j].buffer & ~0x1FUL),
+                            (int32_t)Txbuffer[j].len + (int32_t)((uint32_t)Txbuffer[j].buffer & 0x1FUL));
+  }
+
+  if (HAL_ETH_Transmit(&heth, &TxConfig, ETH_DMA_TRANSMIT_TIMEOUT) != HAL_OK)
+  {
+    errval = ERR_IF;
+  }
 
   return errval;
 }
