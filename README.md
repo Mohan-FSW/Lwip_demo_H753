@@ -47,12 +47,13 @@ The board uses a static IP — there is no DHCP. Configure your PC's Ethernet ad
 
 Set your PC to something like 192.168.1.10 / 255.255.255.0 with no gateway. A direct cable between PC and board works fine — the LAN8742A supports auto-MDIX.
 
-## Clock Tree
-HSI (64 MHz)
-PLL1 M=4, N=60, P=2
-SYSCLK 480 MHz
-HCLK 240 MHz (AHB /2)
-APBx 120 MHz (APBx /2)
+|## Clock Tree
+|-------------------------------|
+|HSI (64 MHz)                   |
+|PLL1 M=4, N=60, P=2            |
+|SYSCLK 480 MHz                 |
+|HCLK 240 MHz (AHB /2)          |
+APBx 120 MHz (APBx /2)          |
 
 Flash latency is set to 4 wait states as required for 480 MHz operation at VOS0.
 
